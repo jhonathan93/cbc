@@ -50,6 +50,8 @@ class Database {
 
     /**
      * @return PDO|null
+     *
+     * @throws Exception
      */
     public function getConnection(): ?PDO {
         $this->conn = null;
@@ -66,8 +68,8 @@ class Database {
             );
 
             $this->conn->exec("set names utf8");
-        } catch(PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
+        } catch (PDOException $exception) {
+            throw new Exception($exception->getMessage());
         }
 
         return $this->conn;
@@ -104,53 +106,64 @@ class Database {
      * @param array $data
      *
      * @return bool
+     * @throws Exception
      */
     public function insert(array $data): bool {
-        $this->getConnection();
+        try {
+            $this->getConnection();
 
-        $columns = implode(', ', array_keys($data));
-        $placeholders = ':' . implode(', :', array_keys($data));
+            $columns = implode(', ', array_keys($data));
+            $placeholders = ':' . implode(', :', array_keys($data));
 
-        $sql = "INSERT INTO {$this->table} ($columns) VALUES ($placeholders)";
-        $stmt = $this->conn->prepare($sql);
+            $sql = "INSERT INTO {$this->table} ($columns) VALUES ($placeholders)";
+            $stmt = $this->conn->prepare($sql);
 
-        foreach ($data as $key => $value) {
-            $stmt->bindValue(":$key", $value);
+            foreach ($data as $key => $value) {
+                $stmt->bindValue(":$key", $value);
+            }
+
+            return $stmt->execute();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-
-        return $stmt->execute();
     }
 
     /**
      * @param array $data
-     *
      * @return int
+     *
+     * @throws Exception
      */
     public function update(array $data): int {
-        $this->getConnection();
+        try {
+            $this->getConnection();
 
-        $setParts = [];
-        foreach ($data as $key => $value) {
-            $setParts[] = "$key = :$key";
+            $setParts = [];
+            foreach ($data as $key => $value) {
+                $setParts[] = "$key = :$key";
+            }
+            $setClause = implode(', ', $setParts);
+
+            $sql = "UPDATE {$this->table} SET $setClause";
+            $sql .= $this->buildWhereClause();
+
+            $stmt = $this->conn->prepare($sql);
+
+            foreach ($data as $key => $value) {
+                $stmt->bindValue(":$key", $value);
+            }
+            $this->bindWhereValues($stmt);
+
+            $stmt->execute();
+            return $stmt->rowCount();
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-        $setClause = implode(', ', $setParts);
-
-        $sql = "UPDATE {$this->table} SET $setClause";
-        $sql .= $this->buildWhereClause();
-
-        $stmt = $this->conn->prepare($sql);
-
-        foreach ($data as $key => $value) {
-            $stmt->bindValue(":$key", $value);
-        }
-        $this->bindWhereValues($stmt);
-
-        $stmt->execute();
-        return $stmt->rowCount();
     }
 
     /**
      * @return array
+     *
      * @throws Exception
      */
     public function get(): array {
@@ -168,39 +181,6 @@ class Database {
         } catch (PDOException $exception) {
             throw new Exception($exception->getMessage());
         }
-    }
-
-    /**
-     * @return mixed|null
-     */
-    public function first() {
-        $this->getConnection();
-
-        $sql = "SELECT * FROM {$this->table}";
-        $sql .= $this->buildWhereClause();
-        $sql .= " LIMIT 1";
-
-        $stmt = $this->conn->prepare($sql);
-        $this->bindWhereValues($stmt);
-        $stmt->execute();
-
-        return $stmt->fetch(PDO::FETCH_OBJ) ?: null;
-    }
-
-    /**
-     * @return int
-     */
-    public function delete(): int {
-        $this->getConnection();
-
-        $sql = "DELETE FROM {$this->table}";
-        $sql .= $this->buildWhereClause();
-
-        $stmt = $this->conn->prepare($sql);
-        $this->bindWhereValues($stmt);
-        $stmt->execute();
-
-        return $stmt->rowCount();
     }
 
     /**

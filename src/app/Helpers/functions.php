@@ -8,13 +8,19 @@ if (!function_exists('app')) {
      *
      * @return object
      */
-    function app($class, ...$params) {
+    function app(string $class, ...$params): object {
         return new $class(...$params);
     }
 }
 
 if (!function_exists('dd')) {
-    function dd($data) {
+
+    /**
+     * @param array $data
+     *
+     * @return void
+     */
+    function dd(array $data) {
         echo '<pre>';
         var_dump($data);
         echo '</pre>';
