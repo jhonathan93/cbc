@@ -24,7 +24,7 @@ class ApiRouter {
                 '/resource' => [ResourceController::class, 'getResources'],
             ],
             'POST' => [
-                '/club' => [ClubController::class, 'createClubs']
+                '/club' => [ClubController::class, 'createClub']
             ]
         ];
     }
@@ -35,7 +35,7 @@ class ApiRouter {
      *
      * @return void
      */
-    public function handleRequest($method, $uri) {
+    public function handleRequest(string $method, string $uri) {
         $method = strtoupper($method);
         $uri = $this->normalizeUri($uri);
 
@@ -52,7 +52,7 @@ class ApiRouter {
      *
      * @return void
      */
-    private function dispatch($method, $uri) {
+    private function dispatch(string $method, string $uri) {
         if (!isset($this->routes[$method])) Response::send(405, ['message' => 'Método não permitido']);
 
         foreach ($this->routes[$method] as $route => $handler) {
@@ -73,7 +73,7 @@ class ApiRouter {
      *
      * @return bool
      */
-    private function matchRoute($route, $uri) {
+    private function matchRoute(string $route, string $uri): bool {
         $routePattern = preg_replace('/\//', '\/', $route);
         $routePattern = '/^' . $routePattern . '(\/?)$/';
         return (bool) preg_match($routePattern, $uri);
@@ -84,7 +84,7 @@ class ApiRouter {
      *
      * @return string
      */
-    private function normalizeUri($uri) {
+    private function normalizeUri(string $uri): string {
         return '/' . trim($uri, '/');
     }
 }

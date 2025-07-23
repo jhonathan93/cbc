@@ -51,7 +51,7 @@ class Database {
     /**
      * @return PDO|null
      */
-    public function getConnection() {
+    public function getConnection(): ?PDO {
         $this->conn = null;
 
         try {
@@ -74,24 +74,24 @@ class Database {
     }
 
     /**
-     * @param $table
+     * @param string $table
      *
      * @return $this
      */
-    public function table($table) {
+    public function table(string $table): self {
         $this->table = $table;
         $this->resetQuery();
         return $this;
     }
 
     /**
-     * @param $column
-     * @param $operator
-     * @param $value
+     * @param string $column
+     * @param string $operator
+     * @param mixed $value
      *
      * @return $this
      */
-    public function where($column, $operator, $value) {
+    public function where(string $column, string $operator, $value): self {
         $this->whereConditions[] = [
             'column' => $column,
             'operator' => $operator,
@@ -103,9 +103,9 @@ class Database {
     /**
      * @param array $data
      *
-     * @return false|string
+     * @return bool
      */
-    public function insert(array $data) {
+    public function insert(array $data): bool {
         $this->getConnection();
 
         $columns = implode(', ', array_keys($data));
@@ -118,8 +118,7 @@ class Database {
             $stmt->bindValue(":$key", $value);
         }
 
-        $stmt->execute();
-        return $this->conn->lastInsertId();
+        return $stmt->execute();
     }
 
     /**
@@ -127,7 +126,7 @@ class Database {
      *
      * @return int
      */
-    public function update(array $data) {
+    public function update(array $data): int {
         $this->getConnection();
 
         $setParts = [];
@@ -152,18 +151,23 @@ class Database {
 
     /**
      * @return array
+     * @throws Exception
      */
-    public function get() {
-        $this->getConnection();
+    public function get(): array {
+        try {
+            $this->getConnection();
 
-        $sql = "SELECT * FROM {$this->table}";
-        $sql .= $this->buildWhereClause();
+            $sql = "SELECT * FROM {$this->table}";
+            $sql .= $this->buildWhereClause();
 
-        $stmt = $this->conn->prepare($sql);
-        $this->bindWhereValues($stmt);
-        $stmt->execute();
+            $stmt = $this->conn->prepare($sql);
+            $this->bindWhereValues($stmt);
+            $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+            return $stmt->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $exception) {
+            throw new Exception($exception->getMessage());
+        }
     }
 
     /**
@@ -186,7 +190,7 @@ class Database {
     /**
      * @return int
      */
-    public function delete() {
+    public function delete(): int {
         $this->getConnection();
 
         $sql = "DELETE FROM {$this->table}";
@@ -202,10 +206,8 @@ class Database {
     /**
      * @return string
      */
-    private function buildWhereClause() {
-        if (empty($this->whereConditions)) {
-            return '';
-        }
+    private function buildWhereClause(): string {
+        if (empty($this->whereConditions)) return '';
 
         $whereParts = [];
         foreach ($this->whereConditions as $index => $condition) {
@@ -220,7 +222,7 @@ class Database {
      *
      * @return void
      */
-    private function bindWhereValues($stmt) {
+    private function bindWhereValues(PDOStatement $stmt) {
         foreach ($this->whereConditions as $index => $condition) {
             $stmt->bindValue(":where_$index", $condition['value']);
         }

@@ -2,6 +2,7 @@
 
 namespace app\Models\Resource;
 
+use Exception;
 use app\Models\BaseModel;
 
 class ResourceModel extends BaseModel {
@@ -13,8 +14,10 @@ class ResourceModel extends BaseModel {
 
     /**
      * @return array
+     *
+     * @throws Exception
      */
-    public function get() {
+    public function get(): array {
         return $this->db->table($this->table)->get();
     }
 }
