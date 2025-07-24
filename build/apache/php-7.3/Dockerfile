@@ -29,9 +29,6 @@ RUN apt-get update && apt-get install -y \
     procps \
     vim \
     zip \
-    default-jdk \
-    default-jre \
-    net-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Habilitação do mod_rewrite e mod_headers
@@ -70,9 +67,9 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configuring system
+COPY .docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY .docker/config/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY .docker/config/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-COPY .docker/config/.env /usr/local/bin/.env
 COPY .docker/script/colors.sh /usr/local/bin/colors.sh
 COPY .docker/script/signature.sh /usr/local/bin/signature.sh
 

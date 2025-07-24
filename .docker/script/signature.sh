@@ -5,7 +5,7 @@
 SCRIPT_DIR=$(pwd)
 FOLDER_NAME=$(basename "$SCRIPT_DIR")
 
-if [[ "$FOLDER_NAME" == "docker-laravel" ]]; then
+if [[ "$FOLDER_NAME" == "docker-cbc" ]]; then
 source ./.docker/script/colors.sh
 else
 . /usr/local/bin/colors.sh

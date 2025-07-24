@@ -1,7 +1,8 @@
-version: '3'
-
 networks:
   cbc:
+
+volumes:
+  mysql:
 
 services:
   app:
@@ -17,16 +18,25 @@ services:
     volumes:
       - ./src:/var/www/html
       - ./.docker/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./.docker/config/.env:/var/www/html/.env.template
       - ~/.composer/cache:/var/www/.composer/cache
-      - ~/.npm:/var/www/.npm
     depends_on:
       - mysql
     networks:
       - cbc
+    command: >
+      sh -c "if [ ! -f /var/www/html/.env ]; then
+        cp /var/www/html/.env.template /var/www/html/.env;
+      fi &&
+      composer install -o &&
+      composer dump-autoload -o &&
+      docker-php-entrypoint apache2-foreground"
 
   mysql:
     image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --init-file=/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
     environment:
@@ -36,10 +46,8 @@ services:
       MYSQL_ROOT_PASSWORD: admin123
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 5s
-      timeout: 10s
-      retries: 10
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d
     networks:
       - cbc
