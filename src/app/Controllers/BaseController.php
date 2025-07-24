@@ -23,6 +23,7 @@ class BaseController {
 
     /**
      * @param array $rules
+     *
      * @return array
      * @throws Exception
      */

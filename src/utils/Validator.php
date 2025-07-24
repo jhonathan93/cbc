@@ -1,5 +1,9 @@
 <?php
 class Validator {
+
+    /**
+     * @var array
+     */
     private $errors = [];
 
     /**

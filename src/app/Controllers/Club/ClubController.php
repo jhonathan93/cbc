@@ -16,7 +16,7 @@ class ClubController extends BaseController {
      */
     public function getClubs() {
         try {
-            Response::send(200, app(ClubModel::class)->get());
+            Response::send(200, app(ClubModel::class)->getData());
         } catch (Exception $e) {
             Response::error($e->getMessage());
         }
@@ -31,7 +31,7 @@ class ClubController extends BaseController {
 
             $this->validateRequest([
                 "clube" => 'required|string',
-                "saldo" => 'required|positive_numeric',
+                "saldo_disponivel" => 'required|positive_numeric',
             ]);
 
             if (!app(ClubModel::class)->create($data)) throw new Exception("Estamos tendo problemas");

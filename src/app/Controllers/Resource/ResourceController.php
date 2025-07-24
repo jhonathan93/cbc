@@ -16,7 +16,7 @@ class ResourceController extends BaseController {
      */
     public function getResources() {
         try {
-            Response::send(200, app(ResourceModel::class)->get());
+            Response::send(200, app(ResourceModel::class)->getData());
         } catch (Exception $e) {
             Response::error($e->getMessage());
         }

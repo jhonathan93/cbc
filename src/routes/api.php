@@ -2,6 +2,7 @@
 
 use app\Controllers\Club\ClubController;
 use app\Controllers\Resource\ResourceController;
+use app\Controllers\Consumption\ConsumptionController;
 
 class ApiRouter {
 
@@ -20,11 +21,12 @@ class ApiRouter {
     private function initializeRoutes() {
         $this->routes = [
             'GET' => [
-                '/club' => [ClubController::class, 'getClubs'],
-                '/resource' => [ResourceController::class, 'getResources'],
+                '/clube' => [ClubController::class, 'getClubs'],
+                '/recurso' => [ResourceController::class, 'getResources'],
             ],
             'POST' => [
-                '/club' => [ClubController::class, 'createClub']
+                '/clube' => [ClubController::class, 'createClub'],
+                '/consumir' => [ConsumptionController::class, 'consume'],
             ]
         ];
     }
@@ -76,6 +78,7 @@ class ApiRouter {
     private function matchRoute(string $route, string $uri): bool {
         $routePattern = preg_replace('/\//', '\/', $route);
         $routePattern = '/^' . $routePattern . '(\/?)$/';
+
         return (bool) preg_match($routePattern, $uri);
     }
 
