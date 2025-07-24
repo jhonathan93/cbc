@@ -1,9 +1,6 @@
 networks:
   cbc:
 
-volumes:
-  mysql:
-
 services:
   app:
     build:
@@ -44,10 +41,16 @@ services:
       MYSQL_USER: cbc
       MYSQL_PASSWORD: admin123
       MYSQL_ROOT_PASSWORD: admin123
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
     volumes:
-      - mysql:/var/lib/mysql
-      - ./docker/mysql-init:/docker-entrypoint-initdb.d
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h localhost -u root --password=admin123
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - cbc
+
+volumes:
+  mysql_data:
