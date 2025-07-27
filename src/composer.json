@@ -1,5 +1,6 @@
 {
     "name": "cbc/cbc",
+    "description": "Prova CBC",
     "type": "project",
     "license": "MIT",
     "autoload": {
