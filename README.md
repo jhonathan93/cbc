@@ -30,3 +30,5 @@ Qualquer um dos comandos iniciará a criação dos containers e servidor
 ## Orientações 
 
 Todas as configurações necessárias para rodar o servidor de forma perfeita serão feitas automaticamente pelo docker, caso venha acontecer algum problema, os arquivos importantes estão todos no repositório para realizar a configuração manualmente.
+
+https://dev.to/jackmiras/xdebug-in-phpstorm-with-docker-2al8
