@@ -16,3 +16,15 @@
 [92] E: Could not connect to client. :-(
 [92] Log closed at 2025-08-02 13:10:39
 
+[7] Log opened at 2025-08-02 13:27:40
+[7] I: Connecting to configured address/port: host.docker.internal:9003.
+[7] W: Creating socket for 'host.docker.internal:9003', poll success, but error: Operation now in progress (29).
+[7] E: Could not connect to client. :-(
+[7] Log closed at 2025-08-02 13:27:40
+
+[25] Log opened at 2025-08-02 13:27:41
+[25] I: Connecting to configured address/port: host.docker.internal:9003.
+[25] W: Creating socket for 'host.docker.internal:9003', poll success, but error: Operation now in progress (29).
+[25] E: Could not connect to client. :-(
+[25] Log closed at 2025-08-02 13:27:41
+
